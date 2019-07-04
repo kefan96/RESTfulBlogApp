@@ -37,6 +37,21 @@ app.get("/blogs", (req, res) => {
             res.render("index", {blogs: blogs});
         }
     });
+});
+
+app.get("/blogs/new", (req, res) => {
+    res.render("new");
+});
+
+app.post("/blogs", (req, res) => {
+    let data = req.body.blog;
+    Blog.create(data, (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect("/blogs");
+        }
+    })
 })
 
 app.listen(3000, () => {
