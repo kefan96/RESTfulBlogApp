@@ -43,6 +43,16 @@ app.get("/blogs/new", (req, res) => {
     res.render("new");
 });
 
+app.get("/blogs/:id", (req, res) => {
+    Blog.findById(req.params.id, (err, foundBlog) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("show", {blog: foundBlog});
+        }
+    });
+});
+
 app.post("/blogs", (req, res) => {
     let data = req.body.blog;
     Blog.create(data, (err) => {
