@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
+const methodOverride = require("method-override");
 
 mongoose.connect("mongodb+srv://Admin:5t6y7u8iYKF!@cluster0-mhbxn.mongodb.net/test?retryWrites=true&w=majority", {
   useNewUrlParser: true,
@@ -15,6 +16,7 @@ mongoose.connect("mongodb+srv://Admin:5t6y7u8iYKF!@cluster0-mhbxn.mongodb.net/te
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(methodOverride("_method"));
 
 // MONGOOSE/MODEL CONFIG
 const blogSchema = new mongoose.Schema({
@@ -56,6 +58,36 @@ app.get("/blogs/:id", (req, res) => {
 app.post("/blogs", (req, res) => {
     let data = req.body.blog;
     Blog.create(data, (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect("/blogs");
+        }
+    })
+})
+
+app.get("/blogs/:id/edit", (req, res) => {
+    Blog.findById(req.params.id, (err, foundBlog) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("edit", {blog: foundBlog});
+        }
+    })
+});
+
+app.put("/blogs/:id", (req, res) => {
+    Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect("/blogs/" + req.params.id);
+        }
+    })
+});
+
+app.delete("/blogs/:id", (req, res) => {
+    Blog.findByIdAndDelete(req.params.id, err => {
         if (err) {
             console.log(err);
         } else {
